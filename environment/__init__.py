@@ -1,3 +1,3 @@
-from .simple2arm_env import *
+# from .simple2arm_env import *
 
 

@@ -1,6 +1,10 @@
 import time
 import argparse
-
+import sys
+path_to_remove = '/home/lch/miniconda3/envs/gnn/lib/python3.8/site-packages'
+if path_to_remove in sys.path:
+    sys.path.remove(path_to_remove)
+print(sys.path)  
 from tqdm import tqdm
 import pickle
 import pybullet as p
