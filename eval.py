@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import imageio
 
 import torch
 import numpy as np
@@ -20,18 +21,20 @@ from configs.config import set_random_seed, load_config
 from utils import load_dataset, to_np
 
 parser = argparse.ArgumentParser(description='GNN-Dynamic')
-parser.add_argument('--yaml_file', type=str, default='configs/2arms.yaml',
+parser.add_argument('--yaml_file', type=str, default='configs/kuka.yaml',
                     help='yaml file name')
 args = parser.parse_args()
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+print(device)
 
 class Planner():
     def __init__(self, cfg):
         #### Load environment ####
         Env = importlib.import_module('environment.' + cfg['env']['env_name'] + '_env')
         self.env = Env.Env(cfg)
+        print("ENV ")
+        print(self.env)
         self.dof = cfg['env']['config_dim']
         self.obs_size = cfg['env']['workspace_dim']
 
@@ -397,12 +400,24 @@ class Planner():
             result_dict['path_time'].append(path[-1][-1])
             result_dict['check_collision'].append(check_collision)
 
+            if success and path and index%100 == 0:
+
+                # Use the path to generate a visualization image or animation
+                path_states = [graph_points[node] for node, _ in path] # Extract node states from the current graph
+                gifs = self.env.plot(path=path_states,  make_gif=True)
+                gif_file = "visualizations/{}.gif".format(index)
+                with imageio.get_writer(gif_file, mode='I', fps=10) as writer:
+                    for frame in gifs:
+                        writer.append_data(frame)
+                
+
+
         return result_dict
 
 
 if __name__ == '__main__':
     cfg = load_config(args.yaml_file)
-    model_name = 'arm2'
+    model_name = 'kuka2'
 
     planner = Planner(cfg)
     indexes = range(planner.num_graphs)

@@ -185,7 +185,8 @@ class TemporalEncoder(nn.Module):
         self.embed_size = embed_size
 
         position = torch.arange(max_seq_len)
-        freqs = min_freq ** (2 * (torch.arange(self.embed_size) // 2) / self.embed_size)
+        freqs = min_freq ** (2 * torch.div(torch.arange(self.embed_size), 2, rounding_mode='trunc') / self.embed_size)
+        # freqs = min_freq ** (2 * (torch.arange(self.embed_size) // 2) / self.embed_size)
         tmp_enc = position.reshape(-1, 1) * freqs.reshape(1, -1)
         tmp_enc[:, ::2] = np.cos(tmp_enc[:, ::2])
         tmp_enc[:, 1::2] = np.sin(tmp_enc[:, 1::2])

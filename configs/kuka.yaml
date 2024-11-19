@@ -17,6 +17,8 @@ model:
   embed_size: 32
   loop: 10
   window_length: 2
+  obs_size: 21
+
 
 data:
   training_files_graph: [
